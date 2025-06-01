@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Track Gear – PLAY-G˚</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://i.imgur.com/SlEkz0v.png" type="image/png">
+
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: #0a0a0a;
+      color: #00ffe5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+    }
+
+    header img {
+      max-width: 90px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ffe5;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: #00ffe5;
+    }
+
+    form {
+      width: 90%;
+      max-width: 400px;
+      background: #1c1c1c;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 30px #00ffe5;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #333;
+      color: #fff;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background: #00ffe5;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #00d4c2;
+    }
+
+    #loading {
+      color: #ccc;
+      font-size: 0.9rem;
+      margin-top: -10px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 10px;
+      font-size: 0.8rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="https://i.imgur.com/SlEkz0v.png" alt="Play-G Logo">
+    <h1>Track Your Gear – PLAY-G˚</h1>
+  </header>
+
+  <form id="tracker-form">
+    <label for="action">What are you doing today?</label>
+    <select id="action" required>
+      <option value="">Select</option>
+      <option value="Pickup">Pickup</option>
+      <option value="Return">Return</option>
+    </select>
+
+    <label for="name">Your Name</label>
+    <input type="text" id="name" required>
+
+    <label for="phone">Phone Number</label>
+    <input type="tel" id="phone" required>
+
+    <label for="equipment">Equipment ID</label>
+    <input type="text" id="equipment" required>
+
+    <label for="location">Location</label>
+    <input type="text" id="location" readonly>
+    <div id="loading">📍 Detecting location...</div>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <footer>
+    © 2025 PLAY-G˚ · Youth Movement in Motion
+  </footer>
+
+  <script>
+    // Auto-fill location
+    window.onload = function () {
+      const loadingEl = document.getElementById("loading");
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          document.getElementById("location").value = `${lat}, ${lon}`;
+          loadingEl.innerText = "📍 Location captured!";
+        }, function () {
+          loadingEl.innerText = "⚠️ Please enable GPS/location services.";
+        });
+      } else {
+        loadingEl.innerText = "Geolocation not supported by browser.";
+      }
+    };
+
+    document.getElementById("tracker-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const action = document.getElementById("action").value;
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const equipment = document.getElementById("equipment").value;
+      const location = document.getElementById("location").value;
+
+      const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScAyNCbsNXIswdiiN6MrNFY8M38gOrxLj7GYrEspKHjzRhY5A/formResponse";
+
+      const query = `?entry.979844365=${encodeURIComponent(action)}&entry.465832393=${encodeURIComponent(name)}&entry.1805619275=${encodeURIComponent(phone)}&entry.369073030=${encodeURIComponent(equipment)}&entry.1616611626=${encodeURIComponent(location)}`;
+
+      fetch(formUrl + query, { method: "POST", mode: "no-cors" })
+        .then(() => alert("✅ Submitted successfully! Thank you."))
+        .catch(() => alert("⚠️ Submission failed. Please try again or check network."));
+    });
+  </script>
+
+</body>
+</html>
